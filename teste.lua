@@ -1,5 +1,5 @@
 wifi.setmode(wifi.STATION);
-wifi.sta.config("SSID", "password");
+wifi.sta.config("TESTE VIRUS", "winarrel");
 wifi.sta.connect();
 
 pin = 3; -- GPIO0 = 3 GPIO2 = 4
@@ -16,7 +16,7 @@ function hora()
                 "Host: google.com/\r\n"..
                 "Accept: */*\r\n"..
                 "User-Agent: Mozilla/4.0 (compatible; esp8266 Lua;)"..
-                "\r\n\r\n") 
+                "\r\n\r\n")
     end)
         
     conn:connect(80,'google.com')
@@ -62,17 +62,7 @@ function draw()
   disp:drawRFrame(0, 20, 128, 44, 4); -- Frame da guiche
   disp:drawRFrame(0, 5, 35, 14 , 2); -- Frame da temperatura
   disp:drawRFrame(91, 5, 36, 14 , 2); -- Frame do hora
-  --disp:drawBox(125, 6, 2,6);
-  --disp:drawBox(107, 5, 4,8);
-  --disp:drawBox(114, 5, 4,8);
-  --disp:drawVLine(99,0, 15);
-  --disp:drawVLine(98,0, 15);
-  --disp:drawVLine(96,4, 11);
-  --disp:drawVLine(95,4, 11);
-  --disp:drawVLine(93,8, 7);
-  --disp:drawVLine(92,8, 7);
-  --disp:drawVLine(90,12, 3);
-  --disp:drawVLine(89,12, 3);
+  
 end
 
 function display()
