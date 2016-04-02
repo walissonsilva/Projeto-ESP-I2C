@@ -1,5 +1,5 @@
 wifi.setmode(wifi.STATION);
-wifi.sta.config("GPDS", "gpdsifpb99");
+wifi.sta.config("TESTE VIRUS", "winarrel");
 wifi.sta.autoconnect(1);
 print(wifi.sta.getip());
 
@@ -7,12 +7,14 @@ t_anterior = tmr.now();
 
 fila_p = {}; -- Sequencia das senhas prioritarias a serem atendidas
 fila_c = {}; -- Sequencia das senhas convencionais a serem atendidas
+atendente = {} -- Lista dos atendentes associados ao seu guiche
 atual_p = 1; -- posicao no vetor da ficha preferencial que sera chamada
 atual_c = 1; -- posicao no vetor da ficha preferencial que sera chamada
 qnt = 1; -- quantidade de fichas
 P = 1; -- quantidade de fichas preferenciais
 C = 1; -- quantidade de fichas convencionais
 flag_c = 1;
+guiche = 0; -- numero de guiches
 
 srv=net.createServer(net.TCP);
 srv:listen(80,function(conn)
@@ -20,8 +22,22 @@ srv:listen(80,function(conn)
         t_atual = tmr.now();
 
         -- Esse if evita contar mais uma senha com apenas um solicitacao
-        if (t_atual - t_anterior  >= 1000000) then
+        if (t_atual - t_anterior  >= 1000000) then        
         t_anterior = tmr.now();
+
+        pos = string.find(request, "Agent");
+        if (pos ~= nil) then 
+        pos1 = string.find(request, "\n", pos + 1);
+        end
+        user = string.sub(request, pos + 7, pos1 - 1);
+        i = 0; j = 0;
+        for k, v in pairs(atendente) do
+            j = j + 1;
+            if (k ~= user) then i = i + 1; end
+        end
+
+        if (i == j) then atendente[user] = guiche; guiche = guiche + 1; print("Novo guiche") end
+        
         -- Enviar a parte inicial da pagina para o servidor
         file.open("pagina_inicio.lua", "r");
         linha = file.readline();
@@ -55,11 +71,11 @@ srv:listen(80,function(conn)
         pos = string.find(request, "?call");
         if (pos ~= nil) then
             if ((flag_c <= 2 and fila_c[atual_c] ~= nil) or fila_p[atual_p] == nil) then
-                print(fila_c[atual_c]);
+                print("Guichê: "..atendente[user].." Senha: "..fila_c[atual_c]);
                 flag_c = flag_c + 1;
                 atual_c = atual_c + 1;
             else
-                print(fila_p[atual_p]);
+                print("Guichê: "..atendente[user].." Senha: "..fila_p[atual_p]);
                 atual_p = atual_p + 1;
                 flag_c = 1;
             end
