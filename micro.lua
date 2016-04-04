@@ -15,6 +15,18 @@ P = 1; -- quantidade de fichas preferenciais
 C = 1; -- quantidade de fichas convencionais
 flag_c = 1;
 guiche = 0; -- numero de guiches
+user = ""; -- usuario que se comunica no momento
+
+-- Criando conexao com o Exosite
+conn = net.createConnection(net.UDP, 0)
+conn:connect(18494,"52.8.0.240")
+conn:on("sent", function(conn)
+    print("Dados enviados com sucesso")
+end)
+
+function send_exosite(g, s)
+    conn:send("cik=a07d0dbab11a9969c0fd961db0b5c19a07faf57e&guiche="..g.."&senha="..s)
+end
 
 srv=net.createServer(net.TCP);
 srv:listen(80,function(conn)
@@ -25,10 +37,13 @@ srv:listen(80,function(conn)
         if (t_atual - t_anterior  >= 1000000) then        
         t_anterior = tmr.now();
 
+        -- Identificar o usuario e atribuir um numero de guiche, caso seja um novo usuario
+        -- request: User-Agent: ...
         pos = string.find(request, "Agent");
         if (pos ~= nil) then 
         pos1 = string.find(request, "\n", pos + 1);
         end
+        -- Ex.: User-Agent: Mozilla sdfjdfgdjfgklj
         user = string.sub(request, pos + 7, pos1 - 1);
         i = 0; j = 0;
         for k, v in pairs(atendente) do
@@ -72,10 +87,12 @@ srv:listen(80,function(conn)
         if (pos ~= nil) then
             if ((flag_c <= 2 and fila_c[atual_c] ~= nil) or fila_p[atual_p] == nil) then
                 print("Guichê: "..atendente[user].." Senha: "..fila_c[atual_c]);
+                send_exosite(atendente[user], fila_c[atual_c]);
                 flag_c = flag_c + 1;
                 atual_c = atual_c + 1;
             else
                 print("Guichê: "..atendente[user].." Senha: "..fila_p[atual_p]);
+                send_exosite(atendente[user], fila_p[atual_p]);
                 atual_p = atual_p + 1;
                 flag_c = 1;
             end
